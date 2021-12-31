@@ -15,13 +15,13 @@ example:
 
 for linux
 ```bash
-wget https://github.com/qhlai/occupier_r/master/compiled_pack/occupier_r_linux
+wget https://github.com/qhlai/occupier_r/raw/master/compiled_pack/occupier_r_linux
 chmod +x ./occupier_r_linux
 ./occupier_r_linux  -c 60 -m 60 -s 60
 ```
 for windows
 ```bash
-wget https://github.com/qhlai/occupier_r/master/compiled_pack/occupier_r_win.exe
+wget https://github.com/qhlai/occupier_r/raw/master/compiled_pack/occupier_r_win.exe
 ./occupier_r_win.exe  -c 60 -m 60 -s 60
 ```
 resourse occupier
