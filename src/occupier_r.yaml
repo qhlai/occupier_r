@@ -8,7 +8,6 @@ args:
       short: c
       long: cpu
       help: cpu_occupy
-      index: 1
       default_value: "0"
       takes_value: true
       required: false
