@@ -1,0 +1,18 @@
+[package]
+name = "occupier_r"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+systemstat = "0.1.10"
+rand = "*"
+clap = { version = "^2.33", features = ["yaml"] }
+
+[profile.release]
+opt-level=3
+lto = "fat"
+##来指定编译器在编译一个crate的时候要能其切分成多少份来同时处理。默认值是16或256，若改成1，则不进行切分，以增加套用更多的优化的机会，提升程序性能，但可能会让编译时间上升。
+codegen-units=1
+panic="abort"
