@@ -1,0 +1,49 @@
+name: Occupier-r
+version: "0.0.1"
+author: Developed by @Eli
+about: Resourse Occupier Tools use Rust-lang. Only For Test
+
+args:
+  - cpu:
+      short: c
+      long: cpu
+      help: cpu_occupy
+      index: 1
+      default_value: "0"
+      takes_value: true
+      required: false
+  - memory:
+      short: m
+      long: memory
+      help: memory_occupy
+      default_value: "0"
+      takes_value: true
+      required: false
+  - storage:
+      short: s
+      long: storage_occupy
+      help: storage_occupy
+      default_value: "0"
+      takes_value: true
+      required: false
+  - delay:
+      short: d
+      long: delay
+      help: delay after flush (s)
+      default_value: "1"
+      takes_value: true
+      required: false
+  - granularity:
+      short: g
+      long: granularity
+      help: loop granularity
+      default_value: "10_000_000"
+      takes_value: true
+      required: false
+  - display_sys:
+      short: Display
+      long: display_system
+      help: ldisplay_system
+      default_value: "false"
+      takes_value: true
+      required: false
