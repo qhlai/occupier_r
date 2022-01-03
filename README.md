@@ -1,7 +1,7 @@
 # Resourse Occupier 
 Is to try to keep all remaining resources in a set proportion.
 
-[CN README](https://github.com/qhlai/occupier_r/blob/master/doc/README_CN.md)
+[中文](https://github.com/qhlai/occupier_r/blob/master/doc/README_CN.md)
 ## Feature:
 
 Occupy computer resources according to the set proportion, dynamically adjust the software occupation, and automatically release when the normal software occupation, so as not to affect the normal use as much as possible.
@@ -34,7 +34,7 @@ resourse occupier
 
 -m memory
 
-More Parameter can see in [src/occupier_r.yaml](https://github.com/qhlai/occupier_r/blob/master/src/occupier_r.yaml)
+More Parameter can see in [src/occupier_r.yaml](https://github.com/qhlai/occupier_r/blob/master/src/occupier_r.yaml) or use -help
 
 ## TODO
 

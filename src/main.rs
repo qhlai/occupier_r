@@ -19,8 +19,7 @@ extern crate rand;
 struct Occupy{
     rate:u16,
     target:u64,
-    up:bool,
-    once:bool,
+    part_size:u16,
     index: Vec<u32>
 }
 
@@ -39,8 +38,8 @@ struct SysOS{
     linux:bool,
     windows:bool
 }
-const MEMORY_PART_SIZE:usize=5;//MB
-const STORAGE_PART_SIZE:usize=50;//MB
+//const MEMORY_PART_SIZE:usize=5;//MB
+//const STORAGE_PART_SIZE:usize=50;//MB
 const STORAGE_PATH:&str="./storage_bucket_dsd1sakmf";
 fn main()  -> std::io::Result<()>{
     let sys = System::new();
@@ -50,13 +49,16 @@ fn main()  -> std::io::Result<()>{
     let cpu_rate:u16 = args.value_of("cpu").unwrap_or("0").parse().unwrap_or(0);
     let memory_rate:u16 = args.value_of("memory").unwrap_or("0").parse().unwrap_or(0);
     let storage_rate:u16 = args.value_of("storage").unwrap_or("0").parse().unwrap_or(0);
+    let memory_size:u16 = args.value_of("memory_size").unwrap_or("0").parse().unwrap_or(10);//MB
+    let storage_size:u16 = args.value_of("storage_size").unwrap_or("0").parse().unwrap_or(50);//MB
     let granularity:usize = args.value_of("granularity").unwrap_or("0").parse().unwrap_or(50);
     let flush_delay_time:f32 = args.value_of("delay").unwrap_or("0").parse().unwrap_or(0.2);
-    let display_system:bool = args.value_of("display_sys").unwrap_or("false").parse().unwrap_or(false);
+    let display_system:bool = args.value_of("status").unwrap_or("false").parse().unwrap_or(false);
     if display_system{
          systemstat_example();
     }
-    //let memory_rate=50;
+
+   // let memory_rate=50;
     let flush_delay_time=(flush_delay_time *1000.0) as u64;
     if cpu_rate+memory_rate+storage_rate==0
     {
@@ -69,13 +71,12 @@ fn main()  -> std::io::Result<()>{
         let mut memory_occupy=Occupy{
             rate:memory_rate,
             target:0,
-            up:false,
-            once:true,
+            part_size:memory_size,//MB
             index:Vec::new()
         };
         let mut memory_part:Vec<u8>=Vec::new();
         if memory_rate!=0{//less waste
-            for i in 0..MEMORY_PART_SIZE*1024*1024
+            for i in 0..memory_occupy.part_size as u64*1024*1024
             {
                 memory_part.push(1);
             }
@@ -85,23 +86,23 @@ fn main()  -> std::io::Result<()>{
         let mut storage_occupy=Occupy{
             rate:storage_rate,
             target:0,
-            up:false,
-            once:true,
+            part_size:storage_size,//MB
             index:Vec::new()
         };
         
         let mut storage_part:Vec<u8>=Vec::new();
         if storage_rate!=0{ //less waste
-            for i in 0..STORAGE_PART_SIZE*1024*1024
+            for i in 0..storage_occupy.part_size as u64*1024*1024
             {
                 storage_part.push(1);
             }
-        }
-        match fs::remove_dir_all(STORAGE_PATH){
+            match fs::remove_dir_all(STORAGE_PATH){
             Ok(_) => println!("\ndeleted seccessfully"),
             Err(x)=>println!("\ntry to delete rubbuish before:{}",x)
-        };
-        fs::create_dir(STORAGE_PATH)?;
+            };
+            fs::create_dir(STORAGE_PATH)?;
+        }
+
 
     let mut is_free:bool=false;
 
@@ -125,7 +126,7 @@ fn main()  -> std::io::Result<()>{
             else{
     
             }
-            if (counter/STORAGE_PART_SIZE)%granularity==0 || is_free==true {
+            if (counter/storage_occupy.part_size as usize)%granularity==0 || is_free==true {
                 storage_get_target(&sys,&mut storage_occupy);
                 thread::sleep(Duration::from_millis(flush_delay_time)); 
             }
@@ -145,7 +146,7 @@ fn main()  -> std::io::Result<()>{
             else{
                 //is_free-=1;
             }
-            if counter%(granularity/MEMORY_PART_SIZE)==0 || is_free==true {
+            if counter%(granularity/memory_occupy.part_size as usize)==0 || is_free==true {
                 memory_get_target(&sys,&mut memory_occupy);
                 thread::sleep(Duration::from_millis(flush_delay_time)); 
             }
@@ -166,17 +167,18 @@ fn memory_get_target(sys:&systemstat::platform::PlatformImpl,resource:&mut Occup
             let mem_used=saturating_sub_bytes(mem.total, mem.free);
             println!("\nMemory: {} used / {} total, {}%,Occupied:{}MB",
                              mem_used, mem.total, 
-                             100-100*mem.free.as_u64()/mem.total.as_u64(),resource.index.len()*1);//64/8/1024/1024
+                             100-100*mem.free.as_u64()/mem.total.as_u64(),
+                             resource.index.len()*resource.part_size as usize);//64/8/1024/1024
             let  mem_target=mem.total.as_u64()*(resource.rate as u64)/100;
             let mut part_num_target:u64=0;
             //mem_target-mem_used.as_u64()+resource.index.len()as u64*1024*1024*MEMORY_PART_SIZE as u64
-            let other_used=mem_used.as_u64()-resource.index.len()as u64*1024*1024*MEMORY_PART_SIZE as u64;
+            let other_used=mem_used.as_u64()-resource.index.len()as u64*1024*1024*resource.part_size as u64;
             if mem_target<other_used{
                 part_num_target=0;
             }
             else{
                 //bytes =>num
-                part_num_target= (mem_target-other_used)/(1024*1024*MEMORY_PART_SIZE as u64);//64/8
+                part_num_target= (mem_target-other_used)/(1024*1024*resource.part_size as u64);//64/8
                 //println!("{}   {}",other_used,part_num_target); 
             }
             //ignore tiny to improve performance
@@ -199,9 +201,10 @@ fn storage_get_target(sys:&systemstat::platform::PlatformImpl,resource:&mut Occu
     let (storage_used,storage_avail,storage_total)=storage_getmsg(&sys);
     println!("\nStorage: Used:{} Avail:{}Total{}, {}%, Occupied:{}MB",
             storage_used,storage_avail,storage_total,
-            100*storage_used.as_u64()/storage_total.as_u64(),resource.index.len()*STORAGE_PART_SIZE);     
+            100*storage_used.as_u64()/storage_total.as_u64(),
+            resource.index.len()*resource.part_size as usize);     
     let storage_target=storage_total.as_u64()*(resource.rate as u64)/100;
-    let other_used=storage_used.as_u64()-resource.index.len()as u64*STORAGE_PART_SIZE as u64*1024*1024;
+    let other_used=storage_used.as_u64()-resource.index.len()as u64*resource.part_size as u64*1024*1024;
     let mut part_num_target:u64=0;
     //println!("{}   {}",other_used,part_num_target); 
     if storage_target<other_used{
@@ -210,7 +213,7 @@ fn storage_get_target(sys:&systemstat::platform::PlatformImpl,resource:&mut Occu
     }
     else{
         //bytes =>num
-        part_num_target= (storage_target-other_used)/(STORAGE_PART_SIZE as u64*1024*1024);
+        part_num_target= (storage_target-other_used)/(resource.part_size as u64*1024*1024);
     }
     //ignore tiny to improve performance
     if (part_num_target as f64/(resource.target as f64)<1.05) && (part_num_target as f64/resource.target as f64>0.95){

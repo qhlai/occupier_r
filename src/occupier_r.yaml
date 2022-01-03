@@ -7,29 +7,43 @@ args:
   - cpu:
       short: c
       long: cpu
-      help: cpu_occupy
+      help: cpu occupy
       default_value: "0"
       takes_value: true
       required: false
   - memory:
       short: m
       long: memory
-      help: memory_occupy
+      help: memory occupy
       default_value: "0"
       takes_value: true
       required: false
   - storage:
       short: s
-      long: storage_occupy
-      help: storage_occupy
+      long: storage
+      help: storage occupy
       default_value: "0"
+      takes_value: true
+      required: false
+  - memory_size:
+      #short: msize
+      long: msize
+      help: memory occupy part size (MB)
+      default_value: "10"
+      takes_value: true
+      required: false
+  - storage_size:
+      #short: ssize
+      long: ssize
+      help: storage occupy
+      default_value: "50"
       takes_value: true
       required: false
   - delay:
       short: d
       long: delay
-      help: delay after flush (s)
-      default_value: "1"
+      help: delay after flush (sec)
+      default_value: "0.2"
       takes_value: true
       required: false
   - granularity:
@@ -39,10 +53,10 @@ args:
       default_value: "10_000_000"
       takes_value: true
       required: false
-  - display_sys:
-      short: Display
-      long: display_system
-      help: ldisplay_system
+  - status:
+      #short: Display
+      long: status
+      help: display system status
       default_value: "false"
       takes_value: true
       required: false
