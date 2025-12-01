@@ -1,5 +1,7 @@
 #! /bin/bash
-cargo build --release
-rm -f ./compiled_pack/occupier_r_linux
 machine_arch=`arch`  
-mv ./target/release/occupier_r ./compiled_pack/occupier_r_linux_${machine_arch}
+cargo fix --lib -p occupier_r --allow-dirty
+rustup target add x86_64-unknown-linux-gnu
+rustup target add aarch64-unknown-linux-gnu
+cargo build --release --target aarch64-unknown-linux-gnu
+cargo build --release --target x86_64-unknown-linux-gnu  

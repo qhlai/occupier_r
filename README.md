@@ -1,7 +1,6 @@
 # Resourse Occupier 
 Is to try to keep all remaining resources in a set proportion.
 
-[中文](https://github.com/qhlai/occupier_r/blob/master/doc/README_CN.md)
 ## Feature:
 
 Occupy computer resources according to the set proportion, dynamically adjust the software occupation, and automatically release when the normal software occupation, so as not to affect the normal use as much as possible.
@@ -17,15 +16,20 @@ example:
 
 for linux_x86_64
 ```bash
-wget https://github.com/qhlai/occupier_r/raw/master/compiled_pack/occupier_r_linux_x86_64
+wget https://github.com/qhlai/occupier_r/releases/download/0.1.1/occupier_r_x86_64
 chmod +x ./occupier_r_linux_x86_64
-./occupier_r_linux_x86_64  -c 60 -m 60 -s 60
+./occupier_r_linux_x86_64 -m 60 -s 60
 ```
-for win10 64
+
+for linux_aarch64
 ```bash
-wget https://github.com/qhlai/occupier_r/raw/master/compiled_pack/occupier_r_win.exe
-./occupier_r_win.exe  -c 60 -m 60 -s 60
+wget https://github.com/qhlai/occupier_r/releases/download/0.1.1/occupier_r_aarch64
+chmod +x ./occupier_r_linux_aarch64
+./occupier_r_linux_x86_64 -m 60 -s 60
 ```
+
+may not support win10
+
 resourse occupier
 ## Parameter
 -c cpu (TODO)
@@ -34,11 +38,9 @@ resourse occupier
 
 -m memory
 
-More Parameter can see in [src/occupier_r.yaml](https://github.com/qhlai/occupier_r/blob/master/src/occupier_r.yaml) or use -help
-
 ## TODO
 
-support CPU (Not very safe, I may not support it soon or never)
+not support CPU (Not very safe, I may not support it soon or never)
 
 random read/write occupy for memory/storage 
 
